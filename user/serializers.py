@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 from rest_framework import serializers
+# from rest_framework.serializers import ModelSerializer
 from rest_framework_jwt.settings import api_settings
 from .models import User
 
@@ -80,3 +81,10 @@ class UserLoginSerializer(serializers.Serializer):
             'email':user.name,
             'token': jwt_token
         }
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = '__all__'
