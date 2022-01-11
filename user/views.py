@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import viewsets
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserSerializer
 from .models import User
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
@@ -29,7 +30,7 @@ class UserRegistrationView(CreateAPIView):
 
 
 
-class UserLoginView(RetrieveAPIView):
+class UserLoginView(CreateAPIView):
     permission_classes = (AllowAny, )
     serializer_class = UserLoginSerializer
 
@@ -61,13 +62,23 @@ class UserRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     permission_classes = (AllowAny, )
 
 class UserAccountRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
+    # queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (AllowAny, )
 
-    def get(self):
-        print(self.request)
-        return "self.request.user"
+    # def get_queryset(self):
+    #     print(f"User: {self.request.user}")
+    #     user = User.objects.get(id=self.request.user.id)
+    #     return user
+
+    def get_object(self):
+        """retrieve and return the authenticated user"""
+        return self.request.user
+
+    # def get(self, request):
+    #     print(request.user)
+    #     serialized_user = UserSerializer(request.user)
+    #     return request.user
 
 
 class PasswordResetView(CreateAPIView):
