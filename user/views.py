@@ -1,6 +1,5 @@
+from django.conf import settings
 from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, UpdateAPIView
@@ -10,7 +9,10 @@ from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserSe
 # from rest_framework.permissions import IsAuthenticated   
 from .models import User
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from django.core.mail import EmailMessage, send_mail
+from django.template.loader import get_template, render_to_string
 
+# Create your views here.
 
 class UserRegistrationView(CreateAPIView):
     serializer_class = UserRegistrationSerializer
@@ -97,8 +99,53 @@ class ForgotPasswordView(CreateAPIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
+        reciepient_email = serializer.data['email']
 
         #TODO: Add functionality to send mail
+        
+        user = User.objects.get(email=email)
+
+        try:
+            subject = "Reset Password Link"
+            sender_email = settings.EMAIL_HOST_USER  # TODO: Change email address
+            # print(sender_email)
+            context = {
+                # 'course': 'Mathematics',
+                'user': user,
+            }
+            message = get_template('email/reset_password.html').render(context)
+            # print(message)
+
+            msg = EmailMessage(
+                subject,
+                message,
+                sender_email,
+                [reciepient_email],
+            )
+            msg.content_subtype = "html"  # Main content is now text/html
+            msg.send()
+
+            # html_message = render_to_string(
+            #     'email/results.html',
+            #     {
+            #         'course': "Physics",
+            #         # 'results': results,
+            #     }
+            # )
+            # test = send_mail(
+            #     subject,
+            #     "Sample Message",
+            #     sender_email,
+            #     ['judeakinwale@gmail.com',],
+            #     # html_message=html_message,
+            #     fail_silently=False,
+            # )
+            # print(test)
+            print("\nMail successfully sent")
+            # return True
+        except Exception as e:
+            print(f"There was an exception: {e}")
+            # return False
 
         response = {
             'success' : True,
@@ -123,9 +170,9 @@ class ChangePasswordView(UpdateAPIView):
 
     def get_object(self, queryset=None):
         email = self.request.Get.get('email')
-        id = id = self.request.Get.get('id')
+        user_id = self.request.Get.get('id')
 
-        obj = User.objects.get(email=email, id=id)
+        obj = User.objects.get(email=email, id=user_id)
         # obj = self.request.user
         return obj
 
