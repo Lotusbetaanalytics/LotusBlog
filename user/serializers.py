@@ -87,4 +87,24 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id', 'name', 'email', 'phone', 'is_staff', 'admin', 'last_login']
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['password']
+
+    # """
+    # Serializer for password change endpoint.
+    # """
+    # old_password = serializers.CharField(required=True)
+    # new_password = serializers.CharField(required=True)
+
+
+class ForgotPasswordSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['email']
