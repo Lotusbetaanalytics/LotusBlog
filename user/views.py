@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.views import APIView
 from rest_framework import viewsets
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserSerializer, ChangePasswordSerializer, ForgotPasswordSerializer
 # from rest_framework.permissions import IsAuthenticated   
@@ -11,6 +12,7 @@ from .models import User
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.core.mail import EmailMessage, send_mail
 from django.template.loader import get_template, render_to_string
+from django.http import HttpRequest
 
 # Create your views here.
 
@@ -90,11 +92,14 @@ class PasswordResetView(CreateAPIView):
     permission_classes = (AllowAny, )
 
 
-class ForgotPasswordView(CreateAPIView):
+class ForgotPasswordView(RetrieveAPIView):
     # queryset = User.objects.all()
     # model = User
     serializer_class = ForgotPasswordSerializer
     permission_classes = (AllowAny, )
+
+    def perform_create(self, serializer):
+        pass
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -103,7 +108,9 @@ class ForgotPasswordView(CreateAPIView):
 
         #TODO: Add functionality to send mail
         
-        user = User.objects.get(email=email)
+        current_host = request.get_host()
+        print(current_host)
+        user = User.objects.get(email=reciepient_email)
 
         try:
             subject = "Reset Password Link"
@@ -112,6 +119,7 @@ class ForgotPasswordView(CreateAPIView):
             context = {
                 # 'course': 'Mathematics',
                 'user': user,
+                'current_host': current_host,
             }
             message = get_template('email/reset_password.html').render(context)
             # print(message)
@@ -166,11 +174,11 @@ class ChangePasswordView(UpdateAPIView):
     """
     serializer_class = ChangePasswordSerializer
     model = User
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny, )
 
     def get_object(self, queryset=None):
-        email = self.request.Get.get('email')
-        user_id = self.request.Get.get('id')
+        email = self.request.GET.get('email')
+        user_id = self.request.GET.get('id')
 
         obj = User.objects.get(email=email, id=user_id)
         # obj = self.request.user
