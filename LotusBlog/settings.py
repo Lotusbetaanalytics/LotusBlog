@@ -213,7 +213,18 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+# Email Config
 if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Use the console for email operations
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Use the console for email operations\
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Email Configuration
+EMAIL_USE_TLS = True
+EMAIL_HOST = os.environ.get('SMTP_HOST')
+EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD') # email password
+EMAIL_HOST_USER = os.environ.get('SMTP_EMAIL') # email address
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 django_heroku.settings(locals())
