@@ -92,14 +92,11 @@ class PasswordResetView(CreateAPIView):
     permission_classes = (AllowAny, )
 
 
-class ForgotPasswordView(RetrieveAPIView):
+class ForgotPasswordView(CreateAPIView):
     # queryset = User.objects.all()
     # model = User
     serializer_class = ForgotPasswordSerializer
     permission_classes = (AllowAny, )
-
-    def perform_create(self, serializer):
-        pass
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
