@@ -213,18 +213,36 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# Email Config
+# Email Configuration
 if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Use the console for email operations\
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Use the console for email operations
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# Email Configuration
 EMAIL_USE_TLS = True
 EMAIL_HOST = os.environ.get('SMTP_HOST')
 EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD') # email password
 EMAIL_HOST_USER = os.environ.get('SMTP_EMAIL') # email address
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+# Azure blob storage configuration
+
+# AZURE_ACCOUNT_NAME = '<azure container name>'
+# AZURE_ACCOUNT_KEY = '<azure account key for this container>'
+# AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+# AZURE_LOCATION = '<blob container name>'
+# AZURE_CONTAINER = '<blob container name>'
+
+# STATIC_LOCATION = 'static'
+# STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+
+# # DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'  # Doesn't work
+
+# Throws error if the above azure config is not accurate
+# STATICFILES_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+# DEFAULT_FILE_STORAGE = 'SMS.storage_backends.custom_azure.AzureMediaStorage'
+
 
 django_heroku.settings(locals())
