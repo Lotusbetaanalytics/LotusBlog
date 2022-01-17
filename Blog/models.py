@@ -8,10 +8,18 @@ class BlogPost(models.Model):
     body = models.TextField()
     image = models.FileField(upload_to='static/media/')
     tag = models.CharField(max_length=500, default='#tech')
+    likes = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
 
     def __str__(self):
         return self.title
+
+    def update_likes(self):
+        self.likes += 1
+        return self.likes
 
 
 class Comment(models.Model):
@@ -21,5 +29,8 @@ class Comment(models.Model):
     name = models.CharField(blank=False, default='', max_length=35)
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-timestamp"]
+
     def __str__(self):
-        return self.email
+        return self.blog.title
